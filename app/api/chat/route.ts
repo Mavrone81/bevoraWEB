@@ -4,7 +4,10 @@ import {
   CHAT_MODEL,
   CHAT_MAX_TOKENS,
   MAX_HISTORY_MESSAGES,
+  WHATSAPP_NUMBER,
+  WHATSAPP_URL,
 } from "@/lib/chatbot";
+import { siteDefaults } from "@/cms/seed-data";
 
 // The Anthropic SDK needs the Node.js runtime (not Edge).
 export const runtime = "nodejs";
@@ -75,7 +78,9 @@ export async function POST(request: Request) {
         console.error("[chat] stream failed:", err);
         // If nothing has been sent yet, surface a readable fallback line.
         controller.enqueue(
-          encoder.encode("Sorry — I ran into a problem. Please try again, or email hello@bevorasg.com."),
+          encoder.encode(
+            `Sorry — I ran into a problem. Please try again, or reach the Bevora team on WhatsApp ${WHATSAPP_NUMBER} (${WHATSAPP_URL}) or email ${siteDefaults.email}.`,
+          ),
         );
         controller.close();
       }
