@@ -1,0 +1,39 @@
+/* ============================================================
+   Bevora — Elevation: radii, borders, shadows, motion
+   Professional = restrained shadows, neutral tint, low spread.
+   ============================================================ */
+:root {
+  /* Corner radii */
+  --radius-xs:  4px;
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+  --radius-2xl: 28px;
+  --radius-pill:999px;
+  --radius-circle:50%;
+
+  /* Borders */
+  --border-hairline: 1px; /* @kind spacing */
+  --border-thick: 1.5px; /* @kind spacing */
+
+  /* Shadows — warm-neutral, soft, layered */
+  --shadow-xs: 0 1px 2px rgba(26,25,23,.06);
+  --shadow-sm: 0 1px 2px rgba(26,25,23,.06), 0 2px 6px rgba(26,25,23,.05);
+  --shadow-md: 0 2px 4px rgba(26,25,23,.05), 0 8px 20px rgba(26,25,23,.08);
+  --shadow-lg: 0 4px 8px rgba(26,25,23,.06), 0 18px 40px rgba(26,25,23,.12);
+  --shadow-xl: 0 8px 16px rgba(26,25,23,.08), 0 32px 64px rgba(26,25,23,.16);
+  --shadow-gold: 0 6px 22px rgba(184,134,11,.30);
+  --shadow-inset: inset 0 1px 0 rgba(255,255,255,.5);
+
+  /* Focus ring */
+  --ring: 0 0 0 3px var(--accent-ring);
+
+  /* Motion */
+  --ease-out: cubic-bezier(.22,.61,.36,1); /* @kind other */
+  --ease-in-out: cubic-bezier(.65,0,.35,1); /* @kind other */
+  --ease-spring: cubic-bezier(.34,1.56,.64,1); /* @kind other */
+  --dur-fast: 120ms; /* @kind other */
+  --dur-base: 200ms; /* @kind other */
+  --dur-slow: 320ms; /* @kind other */
+}

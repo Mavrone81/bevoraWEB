@@ -1,0 +1,10 @@
+/* ============================================================
+   Bevora — Web Fonts
+   No brand fonts were provided with the logo, so these are
+   curated Google Fonts substitutions chosen to match an
+   IT-services brand: Sora (geometric display), Manrope (clean
+   UI/body), JetBrains Mono (technical / code).  ⚠ SUBSTITUTION —
+   swap the @import for self-hosted @font-face if Bevora has
+   official typefaces.
+   ============================================================ */
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap");

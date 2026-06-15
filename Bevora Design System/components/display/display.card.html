@@ -1,0 +1,44 @@
+<!-- @dsCard group="Components" viewport="700x320" name="Display — Card, Badge, Tag, Stat, Avatar, Alert" subtitle="Surfaces, status & content primitives" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<style>body{margin:0;padding:24px;background:var(--neutral-25);font-family:var(--font-sans)}
+.grid{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;align-items:start}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.stack{display:flex;flex-direction:column;gap:12px}</style>
+</head><body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script type="text/babel">
+const { Card, Badge, Tag, Stat, Avatar, Alert } = window.BevoraDesignSystem_cc741a;
+function Demo(){
+  return (<div class="grid">
+    <div class="stack">
+      <Card accent>
+        <div class="row" style={{justifyContent:'space-between',marginBottom:10}}>
+          <Badge tone="gold" solid>Managed IT</Badge>
+          <Avatar name="Wei Lim" size="sm"/>
+        </div>
+        <Stat value="99.98%" label="Uptime" caption="Trailing 12 months"/>
+      </Card>
+      <div class="row">
+        <Badge>Neutral</Badge><Badge tone="gold">Gold</Badge>
+        <Badge tone="success">Online</Badge><Badge tone="warning">Degraded</Badge>
+        <Badge tone="danger">Down</Badge><Badge tone="info">Info</Badge>
+      </div>
+      <div class="row">
+        <Tag>Microsoft 365</Tag><Tag onRemove={()=>{}}>Endpoint security</Tag>
+      </div>
+    </div>
+    <div class="stack">
+      <Alert tone="success" title="Backup complete">All 142 endpoints synced.</Alert>
+      <Alert tone="warning" title="Certificate expiring">TLS cert renews in 6 days.</Alert>
+      <Alert tone="danger" title="Service down">Mail server unreachable.</Alert>
+    </div>
+  </div>);
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo/>);
+</script>
+</body></html>

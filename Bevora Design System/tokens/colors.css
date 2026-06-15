@@ -1,0 +1,82 @@
+/* ============================================================
+   Bevora — Color tokens
+   Brand gold sampled from the BevoraSG mark; warm-neutral greys
+   keep the system professional and let the gold signal pop.
+   ============================================================ */
+:root {
+  /* ---- Brand gold (espresso → goldenrod → bright gold) ---- */
+  --gold-50:  #fbf7ec;
+  --gold-100: #f5eccf;
+  --gold-200: #ead49a;
+  --gold-300: #ddbb63;
+  --gold-400: #cda42f;
+  --gold-500: #b8860b; /* core brand gold (dark goldenrod) */
+  --gold-600: #976c0c;
+  --gold-700: #6f4f0c;
+  --gold-800: #4a350a;
+  --gold-900: #2a2008; /* espresso */
+
+  /* ---- Warm-neutral greys (slightly warm so they sit under gold) ---- */
+  --neutral-0:   #ffffff;
+  --neutral-25:  #faf9f7;
+  --neutral-50:  #f4f3f0;
+  --neutral-100: #e9e7e3;
+  --neutral-200: #d6d3cd;
+  --neutral-300: #b9b5ad;
+  --neutral-400: #918d84;
+  --neutral-500: #6e6a62;
+  --neutral-600: #54514a;
+  --neutral-700: #3e3c36;
+  --neutral-800: #2a2926; /* charcoal */
+  --neutral-900: #1a1917; /* ink */
+  --neutral-950: #0f0e0d;
+
+  /* ---- Semantic status (muted, professional) ---- */
+  --success-500: #2e7d57;
+  --success-50:  #e7f1ec;
+  --warning-500: #d98a0b;
+  --warning-50:  #fbf0dd;
+  --danger-500:  #b3402f;
+  --danger-50:   #f7e6e3;
+  --info-500:    #2f6f8f;
+  --info-50:     #e3eef3;
+
+  /* ---- Signature gradients ---- */
+  --grad-gold: linear-gradient(135deg, #2a2008 0%, #6f4f0c 38%, #b8860b 74%, #cda42f 100%); /* @kind color */
+  --grad-gold-soft: linear-gradient(135deg, #6f4f0c 0%, #b8860b 60%, #cda42f 100%); /* @kind color */
+  --grad-ink: linear-gradient(160deg, #2a2926 0%, #1a1917 60%, #0f0e0d 100%); /* @kind color */
+  --grad-graphite: linear-gradient(160deg, #4a4b50 0%, #34353a 55%, #26272b 100%); /* @kind color */
+  --surface-graphite: #2b2c30; /* @kind color */
+  --grad-sheen: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0)); /* @kind color */
+
+  /* ============================================================
+     Semantic aliases — reference these in components
+     ============================================================ */
+  --bg-page:        var(--neutral-25);
+  --bg-subtle:      var(--neutral-50);
+  --bg-inverse:     var(--neutral-900);
+  --surface-card:   var(--neutral-0);
+  --surface-raised: var(--neutral-0);
+  --surface-sunken: var(--neutral-50);
+  --surface-inverse:var(--neutral-900);
+
+  --border-subtle:  var(--neutral-100);
+  --border-default: var(--neutral-200);
+  --border-strong:  var(--neutral-300);
+  --border-inverse: rgba(255,255,255,.12);
+
+  --text-primary:   var(--neutral-900);
+  --text-secondary: var(--neutral-600);
+  --text-tertiary:  var(--neutral-400);
+  --text-inverse:   var(--neutral-0);
+  --text-on-gold:   var(--neutral-950);
+  --text-brand:     var(--gold-600);
+
+  --accent:         var(--gold-500);
+  --accent-hover:   var(--gold-600);
+  --accent-active:  var(--gold-700);
+  --accent-soft:    var(--gold-50);
+  --accent-ring:    rgba(184,134,11,.32);
+
+  --focus-ring:     rgba(184,134,11,.45);
+}

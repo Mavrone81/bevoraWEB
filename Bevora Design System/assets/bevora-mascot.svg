@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="Bevora beaver mascot">
+  <defs>
+    <linearGradient id="bvGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a2008"></stop>
+      <stop offset="0.4" stop-color="#6f4f0c"></stop>
+      <stop offset="0.78" stop-color="#b8860b"></stop>
+      <stop offset="1" stop-color="#cda42f"></stop>
+    </linearGradient>
+  </defs>
+
+  
+  <circle cx="120" cy="120" r="116" fill="url(#bvGold)"></circle>
+
+  <g fill="#f7f5ee">
+    
+    <circle cx="70" cy="78" r="19"></circle>
+    <circle cx="170" cy="78" r="19"></circle>
+    
+    <path d="M120 60&#xA;             C166 60 196 88 196 122&#xA;             C196 150 176 170 150 178&#xA;             C150 178 138 196 120 196&#xA;             C102 196 90 178 90 178&#xA;             C64 170 44 150 44 122&#xA;             C44 88 74 60 120 60 Z"></path>
+  </g>
+
+  
+  <circle cx="70" cy="78" r="8.5" fill="#b8860b"></circle>
+  <circle cx="170" cy="78" r="8.5" fill="#b8860b"></circle>
+
+  
+  <ellipse cx="96" cy="112" rx="8" ry="10" fill="#1a1917"></ellipse>
+  <ellipse cx="144" cy="112" rx="8" ry="10" fill="#1a1917"></ellipse>
+  <circle cx="98.5" cy="108" r="2.4" fill="#f7f5ee"></circle>
+  <circle cx="146.5" cy="108" r="2.4" fill="#f7f5ee"></circle>
+
+  
+  <path d="M120 132&#xA;           C150 132 168 150 168 168&#xA;           C168 188 146 200 120 200&#xA;           C94 200 72 188 72 168&#xA;           C72 150 90 132 120 132 Z" fill="#e8e1d0"></path>
+
+  
+  <path d="M120 138&#xA;           C111 138 104 144 104 151&#xA;           C104 159 112 164 120 164&#xA;           C128 164 136 159 136 151&#xA;           C136 144 129 138 120 138 Z" fill="#1a1917"></path>
+
+  
+  <g>
+    <rect x="105" y="166" width="14" height="30" rx="4" fill="#ffffff" stroke="#cdb98a" stroke-width="1.5"></rect>
+    <rect x="121" y="166" width="14" height="30" rx="4" fill="#ffffff" stroke="#cdb98a" stroke-width="1.5"></rect>
+  </g>
+</svg>

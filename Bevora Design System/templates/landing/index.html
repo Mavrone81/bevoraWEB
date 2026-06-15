@@ -1,0 +1,76 @@
+<!-- @template name="IT services landing page" description="Bevora-branded hero + services + CTA landing page, ready to fill in" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bevora — Landing template</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="./ds-base.js"></script>
+<style>
+  html,body{margin:0;background:var(--bg-page,#faf9f7)}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:760px){.grid3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+window.addEventListener('DOMContentLoaded', () => {
+  const ns = window.BevoraDesignSystem_cc741a || {};
+  const { Button, SectionHeading, ServiceCard } = ns;
+  if (!Button) { document.getElementById('root').innerHTML = '<p style="font-family:sans-serif;padding:40px">Design-system bundle not loaded yet.</p>'; return; }
+
+  function Page() {
+    React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
+    return (
+      <div>
+        {/* ── HERO ── replace copy + CTA ── */}
+        <section style={{ background: 'var(--grad-graphite)', padding: 'clamp(4rem,8vw,7rem) var(--gutter)' }}>
+          <div style={{ maxWidth: 880, margin: '0 auto', textAlign: 'center' }}>
+            <span className="bv-kicker" style={{ color: 'var(--gold-300)' }}>Your eyebrow here</span>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(2.4rem,5vw,4rem)', lineHeight: 1.05, letterSpacing: '-0.025em', color: '#fff', margin: '16px 0 0' }}>
+              Your headline goes here
+            </h1>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-lg)', lineHeight: 1.6, color: 'rgba(255,255,255,.72)', margin: '20px auto 0', maxWidth: '44ch' }}>
+              One or two sentences that explain the offer and lead with the outcome.
+            </p>
+            <div style={{ display: 'flex', gap: 14, justifyContent: 'center', marginTop: 30 }}>
+              <Button variant="accent" size="lg" iconRight={<i data-lucide="arrow-right" style={{ width: 18, height: 18 }} />}>Primary CTA</Button>
+              <Button variant="secondary" size="lg" style={{ background: 'rgba(255,255,255,.06)', borderColor: 'rgba(255,255,255,.2)', color: '#fff' }}>Secondary</Button>
+            </div>
+          </div>
+        </section>
+
+        {/* ── SERVICES ── duplicate ServiceCard as needed ── */}
+        <section style={{ padding: 'var(--section-y) var(--gutter)' }}>
+          <div style={{ maxWidth: 1120, margin: '0 auto' }}>
+            <SectionHeading kicker="What we do" title="Section title" subtitle="Supporting sentence for this section." align="center" />
+            <div className="grid3" style={{ marginTop: 44 }}>
+              <ServiceCard icon="shield-check" title="Service one" href="#">Short description of the first service.</ServiceCard>
+              <ServiceCard icon="cloud" title="Service two" href="#">Short description of the second service.</ServiceCard>
+              <ServiceCard icon="life-buoy" title="Service three" href="#">Short description of the third service.</ServiceCard>
+            </div>
+          </div>
+        </section>
+
+        {/* ── CTA BAND ── */}
+        <section style={{ background: 'var(--grad-gold)', padding: 'clamp(3rem,6vw,5rem) var(--gutter)' }}>
+          <div style={{ maxWidth: 880, margin: '0 auto', textAlign: 'center' }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'var(--text-3xl)', color: 'var(--neutral-950)', letterSpacing: '-0.015em' }}>Closing call to action</h2>
+            <div style={{ marginTop: 22 }}>
+              <Button variant="primary" size="lg" iconRight={<i data-lucide="arrow-right" style={{ width: 18, height: 18 }} />}>Get started</Button>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(<Page />);
+});
+</script>
+</body>
+</html>
