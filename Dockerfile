@@ -15,6 +15,9 @@ COPY . .
 ARG GIT_SHA=unknown
 ENV GIT_SHA=$GIT_SHA
 ENV NEXT_TELEMETRY_DISABLED=1
+# Raise V8's heap limit for the build — on small RAM the default (~512MB) OOMs;
+# this lets `next build` spill into swap. Build-time only (not in the run stage).
+ENV NODE_OPTIONS=--max-old-space-size=1536
 # Build, then drop dev-only deps (typescript/@types) to shrink the runtime image.
 RUN npm run build && npm prune --omit=dev
 
