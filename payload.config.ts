@@ -36,6 +36,10 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI || "",
     },
+    // Auto-create/sync the schema on boot (incl. in production), so a fresh
+    // deploy provisions its tables and new CMS fields apply without a separate
+    // migration step. Set PAYLOAD_DB_PUSH=false to disable and use migrations.
+    push: process.env.PAYLOAD_DB_PUSH !== "false",
   }),
   sharp,
   onInit: async (payload) => {
