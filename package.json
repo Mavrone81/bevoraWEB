@@ -1,0 +1,34 @@
+{
+  "name": "bevora-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bevora — IT services marketing site, built on the Bevora Design System.",
+  "scripts": {
+    "dev": "next dev -p 30001",
+    "build": "next build",
+    "start": "next start -p 30001",
+    "lint": "next lint",
+    "payload": "payload",
+    "generate:types": "payload generate:types",
+    "generate:importmap": "payload generate:importmap"
+  },
+  "dependencies": {
+    "@payloadcms/db-postgres": "^3.85.1",
+    "@payloadcms/next": "^3.85.1",
+    "@payloadcms/richtext-lexical": "^3.85.1",
+    "@payloadcms/ui": "^3.85.1",
+    "graphql": "^16.14.2",
+    "lucide-react": "^0.469.0",
+    "next": "~15.4.11",
+    "payload": "^3.85.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sharp": "^0.35.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "typescript": "^5.7.3"
+  }
+}

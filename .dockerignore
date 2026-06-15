@@ -1,0 +1,20 @@
+# Keep the build context small and never ship secrets or data into the image.
+.git
+node_modules
+.next
+out
+build
+npm-debug.log*
+.env
+.env*.local
+.DS_Store
+*.tsbuildinfo
+
+# User-generated uploads live in a persistent volume, not the image.
+public/media
+
+# Design-system source is excluded from the build (not imported by the app).
+Bevora Design System
+
+# Docs / local-only
+CMS_SETUP.md

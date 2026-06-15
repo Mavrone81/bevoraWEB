@@ -1,0 +1,59 @@
+# Bevora stack: Next.js + Payload CMS (web) + Postgres (db).
+#
+# Deploy (rebuild ONLY the app; the DB + its volume are never recreated):
+#   GIT_SHA=$(git rev-parse --short HEAD) docker compose up -d --build web
+#
+# Persistent data lives in named volumes (bevora-pgdata, bevora-media) and is NEVER
+# recreated by a deploy. Do NOT run `docker compose down -v` or `docker volume rm`.
+#
+# Host ports are configurable so the same file works locally and on the shared server:
+#   BEVORA_WEB_PORT (default 20011)   BEVORA_DB_PORT (default 5433)
+# The web container reaches Postgres over the compose network (db:5432), not the host.
+services:
+  web:
+    build:
+      context: .
+      args:
+        GIT_SHA: ${GIT_SHA:-unknown}
+    container_name: bevora-web
+    restart: unless-stopped
+    # Runtime secrets (PAYLOAD_SECRET, admin bootstrap creds) come from the
+    # server-only, git-ignored .env.local file.
+    env_file:
+      - .env.local
+    environment:
+      # Reach Postgres over the compose network — overrides any host-style URL in
+      # .env.local (localhost only works for processes on the host, not in a container).
+      DATABASE_URI: postgres://bevora:bevora@db:5432/bevora
+    # nginx terminates TLS and proxies to this localhost port — bind there, not publicly.
+    ports:
+      - "127.0.0.1:${BEVORA_WEB_PORT:-20011}:3000"
+    volumes:
+      # Uploaded media persists across rebuilds.
+      - bevora-media:/app/public/media
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    container_name: bevora-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: bevora
+      POSTGRES_PASSWORD: bevora
+      POSTGRES_DB: bevora
+    # Bound to localhost only — not exposed to the public internet.
+    ports:
+      - "127.0.0.1:${BEVORA_DB_PORT:-5433}:5432"
+    volumes:
+      - bevora-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bevora -d bevora"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  bevora-pgdata:
+  bevora-media:
