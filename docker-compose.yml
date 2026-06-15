@@ -48,6 +48,9 @@ services:
       - "127.0.0.1:${BEVORA_DB_PORT:-5433}:5432"
     volumes:
       - bevora-pgdata:/var/lib/postgresql/data
+      # Applied automatically ONLY on a fresh data volume — provisions the schema
+      # so a brand-new deploy comes up ready; Payload then seeds default content.
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U bevora -d bevora"]
       interval: 5s
