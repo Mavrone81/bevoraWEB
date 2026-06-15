@@ -56,7 +56,13 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `${site.name} — ${site.tagline}`,
       description: site.description,
     },
-    icons: { icon: "/assets/bevora-mark.svg" },
+    icons: {
+      icon: [
+        { url: "/assets/bevora-mascot.svg", type: "image/svg+xml" },
+        { url: "/assets/bevora-mascot.png", type: "image/png" },
+      ],
+      apple: "/assets/bevora-mascot.png",
+    },
   };
 }
 
