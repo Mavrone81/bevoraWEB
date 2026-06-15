@@ -1,9 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getSiteSettings, getServices } from "@/lib/content";
+import { whatsappNumber } from "@/cms/seed-data";
 
 export async function Footer() {
   const [site, services] = await Promise.all([getSiteSettings(), getServices()]);
+  const waDigits = whatsappNumber.replace(/[^0-9]/g, "");
   const cols: { heading: string; items: { label: string; href: string }[] }[] = [
     {
       heading: "Services",
@@ -23,7 +25,8 @@ export async function Footer() {
       items: [
         { label: "Free assessment", href: "/contact" },
         { label: `Email ${site.email}`, href: `mailto:${site.email}` },
-        { label: site.phone, href: `tel:${site.phone.replace(/\s/g, "")}` },
+        { label: `Call ${site.phone}`, href: `tel:${site.phone.replace(/\s/g, "")}` },
+        { label: `WhatsApp ${whatsappNumber}`, href: `https://wa.me/${waDigits}` },
       ],
     },
   ];

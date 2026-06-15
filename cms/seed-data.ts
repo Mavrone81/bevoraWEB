@@ -9,10 +9,16 @@ export const siteDefaults = {
   tagline: "IT services that just work",
   description:
     "Bevora is the Singapore IT partner that keeps your business running — managed support, cloud, and cybersecurity, watched around the clock.",
-  email: "hello@bevorasg.com",
-  phone: "+65 6123 4567",
+  email: "Enquiries@bevorasg.com",
+  phone: "+65 8991 6966",
   address: "71 Robinson Road, Singapore",
 };
+
+// WhatsApp uses the same number as the phone (digits only for wa.me links).
+export const whatsappNumber = "+65 8991 6966";
+
+// All contact email addresses shown on the contact page (first = primary).
+export const contactEmails = ["Enquiries@bevorasg.com", "samuel@vorkhive.com"];
 
 export const navLinksDefault = [
   { label: "Services", href: "/services" },

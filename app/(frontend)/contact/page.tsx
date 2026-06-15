@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, MessageCircle, Mail, MapPin } from "lucide-react";
 import { ContactForm } from "@/components/ContactForm";
 import { getSiteSettings } from "@/lib/content";
+import { whatsappNumber, contactEmails } from "@/cms/seed-data";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -11,9 +12,11 @@ export const metadata: Metadata = {
 
 export default async function ContactPage() {
   const site = await getSiteSettings();
+  const waDigits = whatsappNumber.replace(/[^0-9]/g, "");
   const contactRows = [
     { icon: Phone, text: site.phone, href: `tel:${site.phone.replace(/\s/g, "")}` },
-    { icon: Mail, text: site.email, href: `mailto:${site.email}` },
+    { icon: MessageCircle, text: `WhatsApp ${whatsappNumber}`, href: `https://wa.me/${waDigits}` },
+    ...contactEmails.map((email) => ({ icon: Mail, text: email, href: `mailto:${email}` })),
     { icon: MapPin, text: site.address, href: undefined },
   ];
   return (
