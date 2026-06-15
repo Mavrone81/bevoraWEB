@@ -58,10 +58,10 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     icons: {
       icon: [
-        { url: "/assets/bevora-mascot.svg", type: "image/svg+xml" },
-        { url: "/assets/bevora-mascot.png", type: "image/png" },
+        { url: "/assets/bevora-mascot.svg?v=2", type: "image/svg+xml" },
+        { url: "/assets/bevora-mascot.png?v=2", type: "image/png" },
       ],
-      apple: "/assets/bevora-mascot.png",
+      apple: "/assets/bevora-mascot.png?v=2",
     },
   };
 }
