@@ -3,6 +3,7 @@ import { Sora, Manrope, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { ChatWidget } from "@/components/ChatWidget";
 import { getSiteSettings } from "@/lib/content";
 
 const sora = Sora({
@@ -67,6 +68,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Header navLinks={navLinks} />
         <main>{children}</main>
         <Footer />
+        <ChatWidget />
       </body>
     </html>
   );
