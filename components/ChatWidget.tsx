@@ -2,6 +2,10 @@
 
 import React from "react";
 import { MessageCircle, X, ArrowUp } from "lucide-react";
+import { whatsappNumber } from "@/cms/seed-data";
+
+const WA_URL = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}`;
+const WA_GREEN = "#25D366";
 
 interface Msg {
   role: "user" | "assistant";
@@ -68,7 +72,7 @@ export function ChatWidget() {
       const message =
         err instanceof Error && err.message
           ? err.message
-          : "Sorry — I couldn't reach the assistant. Please email hello@bevorasg.com.";
+          : `Sorry — I couldn't reach the assistant. Message us on WhatsApp ${whatsappNumber} instead.`;
       setMessages((cur) => {
         const copy = [...cur];
         copy[copy.length - 1] = { role: "assistant", content: message };
@@ -145,14 +149,42 @@ export function ChatWidget() {
               padding: "16px 18px",
               background: "var(--grad-ink)",
               color: "var(--text-inverse)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
             }}
           >
-            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16 }}>
-              Bevora assistant
+            <div>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16 }}>
+                Bevora assistant
+              </div>
+              <div style={{ fontSize: 12.5, opacity: 0.7, marginTop: 2 }}>
+                IT services that just work
+              </div>
             </div>
-            <div style={{ fontSize: 12.5, opacity: 0.7, marginTop: 2 }}>
-              IT services that just work
-            </div>
+            <a
+              href={WA_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Chat with Bevora on WhatsApp (${whatsappNumber})`}
+              style={{
+                flex: "0 0 auto",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "7px 11px",
+                borderRadius: 999,
+                background: WA_GREEN,
+                color: "#fff",
+                fontWeight: 700,
+                fontSize: 12.5,
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+              }}
+            >
+              <MessageCircle size={15} /> WhatsApp
+            </a>
           </div>
 
           {/* Transcript */}
@@ -189,6 +221,30 @@ export function ChatWidget() {
                   }}
                 >
                   {pending ? "…" : m.content}
+                  {!isUser && !pending && /wa\.me|whatsapp/i.test(m.content) && (
+                    <a
+                      href={WA_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Open WhatsApp chat with Bevora (${whatsappNumber})`}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 7,
+                        marginTop: 10,
+                        padding: "9px 12px",
+                        borderRadius: "var(--radius-md)",
+                        background: WA_GREEN,
+                        color: "#fff",
+                        fontWeight: 700,
+                        fontSize: 13.5,
+                        textDecoration: "none",
+                      }}
+                    >
+                      <MessageCircle size={16} /> Chat on WhatsApp
+                    </a>
+                  )}
                 </div>
               );
             })}
