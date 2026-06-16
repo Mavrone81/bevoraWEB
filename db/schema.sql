@@ -7,7 +7,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict U8DsfR6A6aPYcZSYa7FpAQ8jRfDNaxfwMJ3R3EtlZea2ynxkzl9cJCRmAaN1Loy
+\restrict mFRswQXF1IbwbhcAEyqVPp3P7CAm4cgip7nNcielQSd5LQntZ8IW1vDsSvP9Qbu
 
 -- Dumped from database version 16.14
 -- Dumped by pg_dump version 16.14
@@ -30,6 +30,27 @@ SET row_security = off;
 CREATE TYPE public.enum_case_studies_status AS ENUM (
     'draft',
     'published'
+);
+
+
+--
+-- Name: enum_live_chats_messages_sender; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.enum_live_chats_messages_sender AS ENUM (
+    'visitor',
+    'staff',
+    'system'
+);
+
+
+--
+-- Name: enum_live_chats_status; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.enum_live_chats_status AS ENUM (
+    'active',
+    'closed'
 );
 
 
@@ -148,6 +169,67 @@ CREATE SEQUENCE public.contact_submissions_id_seq
 --
 
 ALTER SEQUENCE public.contact_submissions_id_seq OWNED BY public.contact_submissions.id;
+
+
+--
+-- Name: live_chats; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.live_chats (
+    id integer NOT NULL,
+    session_id character varying NOT NULL,
+    session_ref character varying,
+    visitor_name character varying,
+    status public.enum_live_chats_status DEFAULT 'active'::public.enum_live_chats_status,
+    updated_at timestamp(3) with time zone DEFAULT now() NOT NULL,
+    created_at timestamp(3) with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: live_chats_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.live_chats_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: live_chats_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.live_chats_id_seq OWNED BY public.live_chats.id;
+
+
+--
+-- Name: live_chats_messages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.live_chats_messages (
+    _order integer NOT NULL,
+    _parent_id integer NOT NULL,
+    id character varying NOT NULL,
+    sender public.enum_live_chats_messages_sender,
+    text character varying,
+    at character varying
+);
+
+
+--
+-- Name: live_chats_outbound_ids; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.live_chats_outbound_ids (
+    _order integer NOT NULL,
+    _parent_id integer NOT NULL,
+    id character varying NOT NULL,
+    wa_id character varying
+);
 
 
 --
@@ -286,7 +368,8 @@ CREATE TABLE public.payload_locked_documents_rels (
     case_studies_id integer,
     contact_submissions_id integer,
     media_id integer,
-    users_id integer
+    users_id integer,
+    live_chats_id integer
 );
 
 
@@ -654,6 +737,13 @@ ALTER TABLE ONLY public.contact_submissions ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
+-- Name: live_chats id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.live_chats ALTER COLUMN id SET DEFAULT nextval('public.live_chats_id_seq'::regclass);
+
+
+--
 -- Name: media id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -752,6 +842,30 @@ ALTER TABLE ONLY public.case_studies_results
 
 ALTER TABLE ONLY public.contact_submissions
     ADD CONSTRAINT contact_submissions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: live_chats_messages live_chats_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.live_chats_messages
+    ADD CONSTRAINT live_chats_messages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: live_chats_outbound_ids live_chats_outbound_ids_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.live_chats_outbound_ids
+    ADD CONSTRAINT live_chats_outbound_ids_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: live_chats live_chats_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.live_chats
+    ADD CONSTRAINT live_chats_pkey PRIMARY KEY (id);
 
 
 --
@@ -947,6 +1061,55 @@ CREATE INDEX contact_submissions_updated_at_idx ON public.contact_submissions US
 
 
 --
+-- Name: live_chats_created_at_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX live_chats_created_at_idx ON public.live_chats USING btree (created_at);
+
+
+--
+-- Name: live_chats_messages_order_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX live_chats_messages_order_idx ON public.live_chats_messages USING btree (_order);
+
+
+--
+-- Name: live_chats_messages_parent_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX live_chats_messages_parent_id_idx ON public.live_chats_messages USING btree (_parent_id);
+
+
+--
+-- Name: live_chats_outbound_ids_order_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX live_chats_outbound_ids_order_idx ON public.live_chats_outbound_ids USING btree (_order);
+
+
+--
+-- Name: live_chats_outbound_ids_parent_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX live_chats_outbound_ids_parent_id_idx ON public.live_chats_outbound_ids USING btree (_parent_id);
+
+
+--
+-- Name: live_chats_session_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX live_chats_session_id_idx ON public.live_chats USING btree (session_id);
+
+
+--
+-- Name: live_chats_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX live_chats_updated_at_idx ON public.live_chats USING btree (updated_at);
+
+
+--
 -- Name: media_created_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1021,6 +1184,13 @@ CREATE INDEX payload_locked_documents_rels_case_studies_id_idx ON public.payload
 --
 
 CREATE INDEX payload_locked_documents_rels_contact_submissions_id_idx ON public.payload_locked_documents_rels USING btree (contact_submissions_id);
+
+
+--
+-- Name: payload_locked_documents_rels_live_chats_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX payload_locked_documents_rels_live_chats_id_idx ON public.payload_locked_documents_rels USING btree (live_chats_id);
 
 
 --
@@ -1313,6 +1483,22 @@ ALTER TABLE ONLY public.case_studies_results
 
 
 --
+-- Name: live_chats_messages live_chats_messages_parent_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.live_chats_messages
+    ADD CONSTRAINT live_chats_messages_parent_id_fk FOREIGN KEY (_parent_id) REFERENCES public.live_chats(id) ON DELETE CASCADE;
+
+
+--
+-- Name: live_chats_outbound_ids live_chats_outbound_ids_parent_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.live_chats_outbound_ids
+    ADD CONSTRAINT live_chats_outbound_ids_parent_id_fk FOREIGN KEY (_parent_id) REFERENCES public.live_chats(id) ON DELETE CASCADE;
+
+
+--
 -- Name: payload_locked_documents_rels payload_locked_documents_rels_case_studies_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1326,6 +1512,14 @@ ALTER TABLE ONLY public.payload_locked_documents_rels
 
 ALTER TABLE ONLY public.payload_locked_documents_rels
     ADD CONSTRAINT payload_locked_documents_rels_contact_submissions_fk FOREIGN KEY (contact_submissions_id) REFERENCES public.contact_submissions(id) ON DELETE CASCADE;
+
+
+--
+-- Name: payload_locked_documents_rels payload_locked_documents_rels_live_chats_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.payload_locked_documents_rels
+    ADD CONSTRAINT payload_locked_documents_rels_live_chats_fk FOREIGN KEY (live_chats_id) REFERENCES public.live_chats(id) ON DELETE CASCADE;
 
 
 --
@@ -1444,5 +1638,5 @@ ALTER TABLE ONLY public.users_sessions
 -- PostgreSQL database dump complete
 --
 
-\unrestrict U8DsfR6A6aPYcZSYa7FpAQ8jRfDNaxfwMJ3R3EtlZea2ynxkzl9cJCRmAaN1Loy
+\unrestrict mFRswQXF1IbwbhcAEyqVPp3P7CAm4cgip7nNcielQSd5LQntZ8IW1vDsSvP9Qbu
 
