@@ -32,6 +32,7 @@ export const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?t
 export const contactEmails = ["Enquiries@bevorasg.com"];
 
 export const navLinksDefault = [
+  { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
   { label: "Why Bevora", href: "/about" },
   { label: "Blog", href: "/blog" },
