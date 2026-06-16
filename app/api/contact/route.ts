@@ -38,9 +38,9 @@ export async function POST(request: Request) {
 
   // ── Persist to the CMS inbox ───────────────────────────────────────────
   // Stored as a Contact Submission, viewable/triageable in the admin at /admin.
-  // To also deliver by email/CRM, wire a provider (Resend, Postmark, …) here.
+  let payload;
   try {
-    const payload = await getPayload({ config });
+    payload = await getPayload({ config });
     await payload.create({
       collection: "contact-submissions",
       data: { name, email, company, service, message, handled: false },
@@ -48,6 +48,26 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error("[contact] failed to save submission:", err);
     return NextResponse.json({ ok: false, error: "Could not save your message. Please try again." }, { status: 500 });
+  }
+
+  // ── Notify the team by email (SMTP) ────────────────────────────────────
+  // Best-effort: the submission is already saved, so an email failure does not
+  // fail the request. Configured via SMTP_* env + Payload's email adapter.
+  try {
+    await payload.sendEmail({
+      to: process.env.CONTACT_NOTIFY_TO || "enquiries@bevorasg.com",
+      replyTo: email,
+      subject: `New website enquiry — ${name}`,
+      text:
+        `New enquiry from the Bevora website:\n\n` +
+        `Name: ${name}\n` +
+        `Email: ${email}\n` +
+        `Company: ${company || "—"}\n` +
+        `Service: ${service || "—"}\n\n` +
+        `Message:\n${message}\n`,
+    });
+  } catch (err) {
+    console.error("[contact] email notification failed:", err);
   }
 
   return NextResponse.json({ ok: true });
