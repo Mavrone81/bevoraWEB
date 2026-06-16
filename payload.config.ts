@@ -13,6 +13,7 @@ import { Services } from "./cms/collections/Services";
 import { Posts } from "./cms/collections/Posts";
 import { CaseStudies } from "./cms/collections/CaseStudies";
 import { ContactSubmissions } from "./cms/collections/ContactSubmissions";
+import { LiveChats } from "./cms/collections/LiveChats";
 import { SiteSettings } from "./cms/globals/SiteSettings";
 import { seed } from "./cms/seed";
 
@@ -46,7 +47,7 @@ export default buildConfig({
     },
   },
   email: emailAdapter,
-  collections: [Services, Posts, CaseStudies, ContactSubmissions, Media, Users],
+  collections: [Services, Posts, CaseStudies, ContactSubmissions, LiveChats, Media, Users],
   globals: [SiteSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

@@ -9,8 +9,9 @@ const WA_GREEN = "#25D366";
 const AVATAR = "/assets/bevora-chat-avatar.svg"; // beaver chat-bot avatar
 
 interface Msg {
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "staff" | "system";
   content: string;
+  at?: string;
 }
 
 const GREETING =
@@ -21,8 +22,13 @@ export function ChatWidget() {
   const [input, setInput] = React.useState("");
   const [messages, setMessages] = React.useState<Msg[]>([{ role: "assistant", content: GREETING }]);
   const [sending, setSending] = React.useState(false);
+  // "bot" = talking to the assistant; "human" = bridged to Bevora staff on WhatsApp.
+  const [mode, setMode] = React.useState<"bot" | "human">("bot");
+  const [connecting, setConnecting] = React.useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
+  const sessionIdRef = React.useRef<string>("");
+  const lastSeenRef = React.useRef<string>("");
 
   // Keep the transcript pinned to the latest message.
   React.useEffect(() => {
@@ -33,10 +39,114 @@ export function ChatWidget() {
     if (open) inputRef.current?.focus();
   }, [open]);
 
+  // While bridged to a human, poll for staff replies and append them in-box.
+  React.useEffect(() => {
+    if (mode !== "human") return;
+    const id = setInterval(async () => {
+      try {
+        const res = await fetch(
+          `/api/livechat/poll?sessionId=${encodeURIComponent(sessionIdRef.current)}&after=${encodeURIComponent(lastSeenRef.current)}`,
+        );
+        const data = await res.json().catch(() => null);
+        if (!data?.ok) return;
+        const incoming = (data.messages || []) as { sender: string; text: string; at: string }[];
+        if (incoming.length) {
+          setMessages((cur) => [
+            ...cur,
+            ...incoming.map((m) => ({
+              role: (m.sender === "staff" ? "staff" : "system") as Msg["role"],
+              content: m.text,
+              at: m.at,
+            })),
+          ]);
+          lastSeenRef.current = incoming[incoming.length - 1].at;
+        }
+        if (data.status === "closed") {
+          clearInterval(id);
+          setMode("bot");
+        }
+      } catch {
+        /* transient — try again next tick */
+      }
+    }, 4000);
+    return () => clearInterval(id);
+  }, [mode]);
+
+  function ensureSessionId() {
+    if (!sessionIdRef.current) {
+      sessionIdRef.current =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `s_${Date.now()}_${Math.round(Math.random() * 1e9)}`;
+    }
+  }
+
+  // Hand off to a live person: bridge the chat to Bevora staff on WhatsApp,
+  // keeping the conversation in this box. Falls back to the WhatsApp deep link
+  // if the bridge isn't configured.
+  async function startLive() {
+    if (mode === "human" || connecting) return;
+    ensureSessionId();
+    setConnecting(true);
+    const lastUser = [...messages].reverse().find((m) => m.role === "user")?.content || "";
+    try {
+      const res = await fetch("/api/livechat/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: sessionIdRef.current, lastMessage: lastUser }),
+      });
+      if (res.status === 503) {
+        window.open(WA_URL, "_blank", "noopener,noreferrer");
+        return;
+      }
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.ok) throw new Error(data?.error || "connect failed");
+      setMode("human");
+      setMessages((cur) => [
+        ...cur,
+        {
+          role: "system",
+          content: "You're connected to the Bevora team. Keep chatting here — someone will reply shortly.",
+        },
+      ]);
+    } catch {
+      window.open(WA_URL, "_blank", "noopener,noreferrer");
+    } finally {
+      setConnecting(false);
+      inputRef.current?.focus();
+    }
+  }
+
   async function send() {
     const text = input.trim();
     if (!text || sending) return;
 
+    // ── Live mode: relay to staff via the WhatsApp bridge ──
+    if (mode === "human") {
+      setMessages((cur) => [...cur, { role: "user", content: text }]);
+      setInput("");
+      setSending(true);
+      try {
+        const res = await fetch("/api/livechat/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId: sessionIdRef.current, text }),
+        });
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !data?.ok) throw new Error();
+      } catch {
+        setMessages((cur) => [
+          ...cur,
+          { role: "system", content: `Couldn't send that — you can also reach us on WhatsApp ${whatsappNumber}.` },
+        ]);
+      } finally {
+        setSending(false);
+        inputRef.current?.focus();
+      }
+      return;
+    }
+
+    // ── Bot mode ──
     const next: Msg[] = [...messages, { role: "user", content: text }];
     // Add an empty assistant slot we'll stream into.
     setMessages([...next, { role: "assistant", content: "" }]);
@@ -47,8 +157,12 @@ export function ChatWidget() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // Don't send the greeting — it's UI-only, not part of the real conversation.
-        body: JSON.stringify({ messages: next.filter((m, i) => !(i === 0 && m.role === "assistant")) }),
+        // Only send the real user/assistant turns (drop greeting + system/staff lines).
+        body: JSON.stringify({
+          messages: next.filter(
+            (m, i) => (m.role === "user" || m.role === "assistant") && !(i === 0 && m.role === "assistant"),
+          ),
+        }),
       });
 
       if (!res.ok || !res.body) {
@@ -216,7 +330,31 @@ export function ChatWidget() {
           >
             {messages.map((m, i) => {
               const isUser = m.role === "user";
-              const pending = sending && i === messages.length - 1 && m.content === "";
+              const isSystem = m.role === "system";
+              const isStaff = m.role === "staff";
+              const isBot = m.role === "assistant";
+              const pending = sending && i === messages.length - 1 && m.content === "" && isBot;
+
+              // System notices: centered, muted, no bubble.
+              if (isSystem) {
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      alignSelf: "center",
+                      maxWidth: "92%",
+                      textAlign: "center",
+                      fontSize: 12.5,
+                      lineHeight: 1.45,
+                      color: "var(--text-secondary)",
+                      padding: "2px 8px",
+                    }}
+                  >
+                    {m.content}
+                  </div>
+                );
+              }
+
               return (
                 <div
                   key={i}
@@ -228,7 +366,7 @@ export function ChatWidget() {
                     alignItems: "flex-start",
                   }}
                 >
-                  {!isUser && (
+                  {isBot && (
                     <img
                       src={AVATAR}
                       alt=""
@@ -237,44 +375,69 @@ export function ChatWidget() {
                       style={{ borderRadius: "50%", flex: "0 0 28px", marginTop: 2 }}
                     />
                   )}
-                  <div
-                    style={{
-                      padding: "10px 13px",
-                      borderRadius: "var(--radius-md)",
-                      fontSize: 14,
-                      lineHeight: 1.5,
-                      whiteSpace: "pre-wrap",
-                      wordBreak: "break-word",
-                      background: isUser ? "var(--neutral-900)" : "var(--surface-card)",
-                      color: isUser ? "var(--text-inverse)" : "var(--text-primary)",
-                      border: isUser ? "none" : "1px solid var(--border-subtle)",
-                    }}
-                  >
-                  {pending ? "…" : m.content}
-                  {!isUser && !pending && /wa\.me|whatsapp/i.test(m.content) && (
-                    <a
-                      href={WA_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`Open WhatsApp chat with Bevora (${whatsappNumber})`}
+                  {isStaff && (
+                    <div
+                      aria-hidden
                       style={{
+                        flex: "0 0 28px",
+                        width: 28,
+                        height: 28,
+                        borderRadius: "50%",
+                        background: WA_GREEN,
+                        color: "#fff",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        gap: 7,
-                        marginTop: 10,
-                        padding: "9px 12px",
-                        borderRadius: "var(--radius-md)",
-                        background: WA_GREEN,
-                        color: "#fff",
-                        fontWeight: 700,
-                        fontSize: 13.5,
-                        textDecoration: "none",
+                        fontSize: 14,
+                        marginTop: 2,
                       }}
                     >
-                      <MessageCircle size={16} /> Chat on WhatsApp
-                    </a>
+                      👤
+                    </div>
                   )}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
+                    {isStaff && (
+                      <span style={{ fontSize: 11.5, fontWeight: 700, color: "var(--text-brand)" }}>Bevora team</span>
+                    )}
+                    <div
+                      style={{
+                        padding: "10px 13px",
+                        borderRadius: "var(--radius-md)",
+                        fontSize: 14,
+                        lineHeight: 1.5,
+                        whiteSpace: "pre-wrap",
+                        wordBreak: "break-word",
+                        background: isUser ? "var(--neutral-900)" : "var(--surface-card)",
+                        color: isUser ? "var(--text-inverse)" : "var(--text-primary)",
+                        border: isUser ? "none" : "1px solid var(--border-subtle)",
+                      }}
+                    >
+                      {pending ? "…" : m.content}
+                      {isBot && !pending && mode === "bot" && /wa\.me|whatsapp|connect you|the team|a human|a person/i.test(m.content) && (
+                        <button
+                          onClick={startLive}
+                          disabled={connecting}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 7,
+                            marginTop: 10,
+                            padding: "9px 12px",
+                            borderRadius: "var(--radius-md)",
+                            background: WA_GREEN,
+                            color: "#fff",
+                            fontWeight: 700,
+                            fontSize: 13.5,
+                            border: "none",
+                            cursor: connecting ? "default" : "pointer",
+                            width: "100%",
+                          }}
+                        >
+                          <MessageCircle size={16} /> {connecting ? "Connecting…" : "Talk to a Bevora person"}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
@@ -298,7 +461,7 @@ export function ChatWidget() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={onKeyDown}
               rows={1}
-              placeholder="Ask about our services…"
+              placeholder={mode === "human" ? "Message the Bevora team…" : "Ask about our services…"}
               style={{
                 flex: 1,
                 resize: "none",
