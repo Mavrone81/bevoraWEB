@@ -29,7 +29,7 @@ export const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?t
 )}`;
 
 // All contact email addresses shown on the contact page (first = primary).
-export const contactEmails = ["Enquiries@bevorasg.com", "samuel@vorkhive.com"];
+export const contactEmails = ["Enquiries@bevorasg.com"];
 
 export const navLinksDefault = [
   { label: "Services", href: "/services" },
