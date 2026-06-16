@@ -2,9 +2,9 @@
 
 import React from "react";
 import { MessageCircle, X, ArrowUp } from "lucide-react";
-import { whatsappNumber } from "@/cms/seed-data";
+import { whatsappNumber, whatsappUrl } from "@/cms/seed-data";
 
-const WA_URL = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}`;
+const WA_URL = whatsappUrl; // wa.me deep link with the pre-filled message
 const WA_GREEN = "#25D366";
 
 interface Msg {

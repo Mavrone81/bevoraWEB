@@ -17,6 +17,17 @@ export const siteDefaults = {
 // WhatsApp uses the same number as the phone (digits only for wa.me links).
 export const whatsappNumber = "+65 8991 6966";
 
+// Pre-filled WhatsApp message so the chat opens with a template the visitor
+// completes (name + email + what they need) — gives Bevora context up front.
+export const whatsappPretext =
+  "Hi Bevora team! I'd like to talk to you about your IT services.\n\nName:\nEmail:\nWhat I need help with:";
+
+// Canonical wa.me deep link WITH the pre-filled message. Use this for every
+// WhatsApp button/link so the visitor always lands on the same prompt.
+export const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(
+  whatsappPretext,
+)}`;
+
 // All contact email addresses shown on the contact page (first = primary).
 export const contactEmails = ["Enquiries@bevorasg.com", "samuel@vorkhive.com"];
 
