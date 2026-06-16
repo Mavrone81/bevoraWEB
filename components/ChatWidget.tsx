@@ -6,6 +6,7 @@ import { whatsappNumber, whatsappUrl } from "@/cms/seed-data";
 
 const WA_URL = whatsappUrl; // wa.me deep link with the pre-filled message
 const WA_GREEN = "#25D366";
+const AVATAR = "/assets/bevora-chat-avatar.svg"; // beaver chat-bot avatar
 
 interface Msg {
   role: "user" | "assistant";
@@ -118,7 +119,11 @@ export function ChatWidget() {
         onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.06)")}
         onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
       >
-        {open ? <X size={24} /> : <MessageCircle size={24} />}
+        {open ? (
+          <X size={24} />
+        ) : (
+          <img src={AVATAR} alt="" width={56} height={56} style={{ borderRadius: "50%", display: "block" }} />
+        )}
       </button>
 
       {/* Panel */}
@@ -155,12 +160,21 @@ export function ChatWidget() {
               gap: 12,
             }}
           >
-            <div>
-              <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16 }}>
-                Bevora assistant
-              </div>
-              <div style={{ fontSize: 12.5, opacity: 0.7, marginTop: 2 }}>
-                IT services that just work
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <img
+                src={AVATAR}
+                alt=""
+                width={38}
+                height={38}
+                style={{ borderRadius: "50%", flex: "0 0 38px", border: "1.5px solid rgba(255,255,255,.25)" }}
+              />
+              <div>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16 }}>
+                  Bevora assistant
+                </div>
+                <div style={{ fontSize: 12.5, opacity: 0.7, marginTop: 2 }}>
+                  IT services that just work
+                </div>
               </div>
             </div>
             <a
@@ -208,18 +222,34 @@ export function ChatWidget() {
                   key={i}
                   style={{
                     alignSelf: isUser ? "flex-end" : "flex-start",
-                    maxWidth: "85%",
-                    padding: "10px 13px",
-                    borderRadius: "var(--radius-md)",
-                    fontSize: 14,
-                    lineHeight: 1.5,
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
-                    background: isUser ? "var(--neutral-900)" : "var(--surface-card)",
-                    color: isUser ? "var(--text-inverse)" : "var(--text-primary)",
-                    border: isUser ? "none" : "1px solid var(--border-subtle)",
+                    maxWidth: "90%",
+                    display: "flex",
+                    gap: 8,
+                    alignItems: "flex-start",
                   }}
                 >
+                  {!isUser && (
+                    <img
+                      src={AVATAR}
+                      alt=""
+                      width={28}
+                      height={28}
+                      style={{ borderRadius: "50%", flex: "0 0 28px", marginTop: 2 }}
+                    />
+                  )}
+                  <div
+                    style={{
+                      padding: "10px 13px",
+                      borderRadius: "var(--radius-md)",
+                      fontSize: 14,
+                      lineHeight: 1.5,
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "break-word",
+                      background: isUser ? "var(--neutral-900)" : "var(--surface-card)",
+                      color: isUser ? "var(--text-inverse)" : "var(--text-primary)",
+                      border: isUser ? "none" : "1px solid var(--border-subtle)",
+                    }}
+                  >
                   {pending ? "…" : m.content}
                   {!isUser && !pending && /wa\.me|whatsapp/i.test(m.content) && (
                     <a
@@ -245,6 +275,7 @@ export function ChatWidget() {
                       <MessageCircle size={16} /> Chat on WhatsApp
                     </a>
                   )}
+                  </div>
                 </div>
               );
             })}
