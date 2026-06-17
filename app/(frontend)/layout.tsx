@@ -71,7 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getSiteSettings();
   return (
-    <html lang="en" className={`${sora.variable} ${manrope.variable} ${jetbrains.variable}`}>
+    <html lang="en-SG" className={`${sora.variable} ${manrope.variable} ${jetbrains.variable}`}>
       <body>
         <JsonLd data={[organizationSchema(site), websiteSchema(site)]} />
         <Header navLinks={site.navLinks} />
