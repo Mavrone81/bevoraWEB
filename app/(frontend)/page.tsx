@@ -5,6 +5,11 @@ import { WhyBevora } from "@/components/sections/WhyBevora";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { ServicesGrid } from "@/components/sections/ServicesGrid";
 import { SectionHeading } from "@/components/marketing/SectionHeading";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default function HomePage() {
   return (

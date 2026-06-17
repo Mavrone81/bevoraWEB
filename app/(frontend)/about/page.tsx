@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "Why Bevora",
   description:
     "Bevora is the dependable IT partner for growing Singapore teams — fixed pricing, a named engineer, security built in, and on-site support when you need it.",
+  alternates: { canonical: "/about" },
 };
 
 const values = [

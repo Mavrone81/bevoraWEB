@@ -3,19 +3,31 @@ import { Check } from "lucide-react";
 import { PageHero } from "@/components/sections/PageHero";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { Reveal } from "@/components/Reveal";
-import { getServices } from "@/lib/content";
+import { getServices, getSiteSettings } from "@/lib/content";
 import { iconFor } from "@/lib/icons";
+import { JsonLd } from "@/components/JsonLd";
+import { servicesSchema, breadcrumbSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Services",
   description:
     "Managed IT, cloud & migration, cybersecurity, backup & disaster recovery, networking and IT consulting — one partner for everything IT in Singapore.",
+  alternates: { canonical: "/services" },
 };
 
 export default async function ServicesPage() {
-  const services = await getServices();
+  const [services, site] = await Promise.all([getServices(), getSiteSettings()]);
   return (
     <>
+      <JsonLd
+        data={[
+          servicesSchema(site, services),
+          breadcrumbSchema(site, [
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+          ]),
+        ]}
+      />
       <PageHero
         kicker="What we do"
         title="One partner for everything IT"

@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { Prose } from "@/components/marketing/Prose";
-import { getCaseStudy, getCaseStudies } from "@/lib/content";
+import { JsonLd } from "@/components/JsonLd";
+import { getCaseStudy, getCaseStudies, getSiteSettings } from "@/lib/content";
+import { caseStudySchema, breadcrumbSchema } from "@/lib/seo";
 
 export async function generateStaticParams() {
   const studies = await getCaseStudies();
@@ -15,16 +17,44 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const study = await getCaseStudy(slug);
   if (!study) return { title: "Case study not found" };
-  return { title: study.title, description: study.summary };
+  const url = `/case-studies/${study.slug}`;
+  return {
+    title: study.title,
+    description: study.summary,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      title: study.title,
+      description: study.summary,
+      url,
+      publishedTime: study.publishedAt ?? undefined,
+      images: study.image?.url ? [{ url: study.image.url, alt: study.image.alt || study.title }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: study.title,
+      description: study.summary,
+    },
+  };
 }
 
 export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const study = await getCaseStudy(slug);
+  const [study, site] = await Promise.all([getCaseStudy(slug), getSiteSettings()]);
   if (!study) notFound();
 
   return (
     <>
+      <JsonLd
+        data={[
+          caseStudySchema(site, study),
+          breadcrumbSchema(site, [
+            { name: "Home", path: "/" },
+            { name: "Case studies", path: "/case-studies" },
+            { name: study.title, path: `/case-studies/${study.slug}` },
+          ]),
+        ]}
+      />
       <article className="bv-section">
         <div style={{ maxWidth: "var(--container-md)", margin: "0 auto", padding: "0 var(--gutter)" }}>
           <Link

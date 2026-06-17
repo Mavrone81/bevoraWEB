@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { Prose } from "@/components/marketing/Prose";
-import { getPost, getPosts } from "@/lib/content";
+import { JsonLd } from "@/components/JsonLd";
+import { getPost, getPosts, getSiteSettings } from "@/lib/content";
+import { articleSchema, breadcrumbSchema } from "@/lib/seo";
 
 export async function generateStaticParams() {
   const posts = await getPosts();
@@ -15,7 +17,25 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const post = await getPost(slug);
   if (!post) return { title: "Article not found" };
-  return { title: post.title, description: post.excerpt };
+  const url = `/blog/${post.slug}`;
+  return {
+    title: post.title,
+    description: post.excerpt,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      title: post.title,
+      description: post.excerpt,
+      url,
+      publishedTime: post.publishedAt ?? undefined,
+      images: post.coverImage?.url ? [{ url: post.coverImage.url, alt: post.coverImage.alt || post.title }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+    },
+  };
 }
 
 function formatDate(value?: string | null) {
@@ -25,11 +45,21 @@ function formatDate(value?: string | null) {
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = await getPost(slug);
+  const [post, site] = await Promise.all([getPost(slug), getSiteSettings()]);
   if (!post) notFound();
 
   return (
     <>
+      <JsonLd
+        data={[
+          articleSchema(site, post),
+          breadcrumbSchema(site, [
+            { name: "Home", path: "/" },
+            { name: "Blog", path: "/blog" },
+            { name: post.title, path: `/blog/${post.slug}` },
+          ]),
+        ]}
+      />
       <article className="bv-section">
         <div style={{ maxWidth: "var(--container-sm, 760px)", margin: "0 auto", padding: "0 var(--gutter)" }}>
           <Link

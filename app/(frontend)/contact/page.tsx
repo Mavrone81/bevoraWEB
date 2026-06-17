@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Contact",
   description:
     "Book a free 30-minute IT assessment with Bevora. Tell us about your setup and we'll show you where it can be safer, faster and cheaper to run.",
+  alternates: { canonical: "/contact" },
 };
 
 export default async function ContactPage() {

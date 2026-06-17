@@ -9,6 +9,7 @@ import { getPosts } from "@/lib/content";
 export const metadata: Metadata = {
   title: "Blog & news",
   description: "IT insights, security advice and product news from the Bevora team.",
+  alternates: { canonical: "/blog" },
 };
 
 function formatDate(value?: string | null) {

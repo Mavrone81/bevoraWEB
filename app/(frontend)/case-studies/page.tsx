@@ -9,6 +9,7 @@ import { getCaseStudies } from "@/lib/content";
 export const metadata: Metadata = {
   title: "Case studies",
   description: "How Bevora keeps Singapore teams running — real client projects and the outcomes they delivered.",
+  alternates: { canonical: "/case-studies" },
 };
 
 export default async function CaseStudiesPage() {

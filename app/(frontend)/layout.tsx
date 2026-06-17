@@ -4,7 +4,9 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ChatWidget } from "@/components/ChatWidget";
+import { JsonLd } from "@/components/JsonLd";
 import { getSiteSettings } from "@/lib/content";
+import { organizationSchema, websiteSchema } from "@/lib/seo";
 
 const sora = Sora({
   subsets: ["latin"],
@@ -67,11 +69,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const { navLinks } = await getSiteSettings();
+  const site = await getSiteSettings();
   return (
     <html lang="en" className={`${sora.variable} ${manrope.variable} ${jetbrains.variable}`}>
       <body>
-        <Header navLinks={navLinks} />
+        <JsonLd data={[organizationSchema(site), websiteSchema(site)]} />
+        <Header navLinks={site.navLinks} />
         <main>{children}</main>
         <Footer />
         <ChatWidget />
