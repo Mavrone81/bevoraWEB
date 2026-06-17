@@ -7,6 +7,7 @@ import {
   whyPointsDefault,
   serviceOptionsDefault,
 } from "./seed-data";
+import { postsSeed, caseStudiesSeed, lexical } from "./content-seed";
 
 // Runs on every boot (onInit). Idempotent: only creates data that is missing,
 // so it bootstraps a fresh database without clobbering edits made in the admin.
@@ -76,5 +77,53 @@ export async function seed(payload: Payload): Promise<void> {
     }
   } catch (err) {
     payload.logger.error({ err }, "Failed seeding site settings");
+  }
+
+  // ── Blog posts ──────────────────────────────────────────────────────
+  try {
+    const { totalDocs } = await payload.count({ collection: "posts" });
+    if (totalDocs === 0) {
+      for (const p of postsSeed) {
+        await payload.create({
+          collection: "posts",
+          data: {
+            title: p.title,
+            slug: p.slug,
+            excerpt: p.excerpt,
+            content: lexical(p.blocks),
+            status: "published",
+            publishedAt: p.publishedAt,
+          },
+        });
+      }
+      payload.logger.info(`Seeded ${postsSeed.length} blog posts`);
+    }
+  } catch (err) {
+    payload.logger.error({ err }, "Failed seeding blog posts");
+  }
+
+  // ── Case studies ────────────────────────────────────────────────────
+  try {
+    const { totalDocs } = await payload.count({ collection: "case-studies" });
+    if (totalDocs === 0) {
+      for (const c of caseStudiesSeed) {
+        await payload.create({
+          collection: "case-studies",
+          data: {
+            title: c.title,
+            slug: c.slug,
+            client: c.client,
+            summary: c.summary,
+            content: lexical(c.blocks),
+            results: c.results,
+            status: "published",
+            publishedAt: c.publishedAt,
+          },
+        });
+      }
+      payload.logger.info(`Seeded ${caseStudiesSeed.length} case studies`);
+    }
+  } catch (err) {
+    payload.logger.error({ err }, "Failed seeding case studies");
   }
 }
