@@ -18,10 +18,13 @@ const siteId = (siteUrl: string) => `${siteUrl}/#website`;
 // code-generated route with a hashed URL, so it isn't safe to hard-code here.)
 const fallbackImage = (siteUrl: string) => `${siteUrl}/assets/bevora-logo-square.png`;
 
+// Typed as both Organization and ProfessionalService (a LocalBusiness subtype)
+// so the same node powers brand knowledge-panel signals AND local-pack /
+// "IT services near me" eligibility for Singapore searches.
 export function organizationSchema(site: SiteSettings) {
   return {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": ["Organization", "ProfessionalService"],
     "@id": orgId(site.url),
     name: site.name,
     legalName: site.name,
@@ -29,15 +32,21 @@ export function organizationSchema(site: SiteSettings) {
     logo: fallbackImage(site.url),
     image: fallbackImage(site.url),
     description: site.description,
+    slogan: site.tagline,
     email: site.email,
     telephone: site.phone,
+    priceRange: "$$",
+    knowsLanguage: ["en-SG"],
     address: {
       "@type": "PostalAddress",
       streetAddress: site.address,
       addressLocality: "Singapore",
       addressCountry: "SG",
     },
+    // Approximate coordinates for the Robinson Road business district.
+    geo: { "@type": "GeoCoordinates", latitude: 1.2789, longitude: 103.8487 },
     areaServed: { "@type": "Country", name: "Singapore" },
+    serviceArea: { "@type": "Country", name: "Singapore" },
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer support",
@@ -46,6 +55,18 @@ export function organizationSchema(site: SiteSettings) {
       areaServed: "SG",
       availableLanguage: ["English"],
     },
+  };
+}
+
+export function faqSchema(faqs: { q: string; a: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
   };
 }
 

@@ -6,7 +6,8 @@ import { Reveal } from "@/components/Reveal";
 import { getServices, getSiteSettings } from "@/lib/content";
 import { iconFor } from "@/lib/icons";
 import { JsonLd } from "@/components/JsonLd";
-import { servicesSchema, breadcrumbSchema } from "@/lib/seo";
+import { Faq, type FaqItem } from "@/components/sections/Faq";
+import { servicesSchema, breadcrumbSchema, faqSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -15,6 +16,34 @@ export const metadata: Metadata = {
   alternates: { canonical: "/services" },
 };
 
+// One source of truth for the visible FAQ and the FAQPage schema below.
+const faqs: FaqItem[] = [
+  {
+    q: "How much do managed IT services cost in Singapore?",
+    a: "Bevora works on a fixed monthly fee based on your team size and the services you need — no surprise call-out charges. We'll quote a clear price after a free 30-minute assessment, so IT becomes a predictable line in your budget.",
+  },
+  {
+    q: "How quickly do you respond when something breaks?",
+    a: "Every client gets a named engineer who knows your setup and a help desk with a committed response time. Most issues are caught by our monitoring and resolved before your team even notices them.",
+  },
+  {
+    q: "Do you provide on-site IT support across Singapore?",
+    a: "Yes. We cover remote support and on-site visits anywhere in Singapore — from a single office to multiple sites — so someone can be in the room when a problem needs hands-on attention.",
+  },
+  {
+    q: "Can you move us to Microsoft 365 or the cloud without downtime?",
+    a: "Yes. We plan and rehearse every migration to Microsoft 365 and Azure so the cutover happens with zero downtime — your team logs in one morning and everything is simply there.",
+  },
+  {
+    q: "Do you handle cybersecurity and backups too?",
+    a: "Security and tested, off-site backups are included as standard with managed IT: endpoint protection, 24/7 threat monitoring, enforced multi-factor authentication and a documented recovery plan for the day you need it.",
+  },
+  {
+    q: "What size of business do you work with?",
+    a: "We specialise in growing Singapore teams — from clinics and law firms to logistics operators. If IT has outgrown a one-person fix-it arrangement, we're built for you.",
+  },
+];
+
 export default async function ServicesPage() {
   const [services, site] = await Promise.all([getServices(), getSiteSettings()]);
   return (
@@ -22,6 +51,7 @@ export default async function ServicesPage() {
       <JsonLd
         data={[
           servicesSchema(site, services),
+          faqSchema(faqs),
           breadcrumbSchema(site, [
             { name: "Home", path: "/" },
             { name: "Services", path: "/services" },
@@ -106,6 +136,12 @@ export default async function ServicesPage() {
           })}
         </div>
       </section>
+
+      <Faq
+        items={faqs}
+        title="IT services in Singapore — your questions, answered"
+        subtitle="The things growing teams ask us most before getting started."
+      />
 
       <CtaBand title="Not sure which you need?" subtitle="Tell us what's slowing your team down. We'll recommend the right mix — and only what you actually need." ctaLabel="Talk to an engineer" />
     </>
